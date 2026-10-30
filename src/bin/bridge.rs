@@ -105,6 +105,10 @@ enum Cmd {
         /// (e.g. security.protocol=SASL_SSL)
         #[arg(long = "kafka", value_name = "KEY=VALUE")]
         kafka: Vec<String>,
+        /// Serve GET /healthz (200 + counters as JSON) on this address,
+        /// e.g. 0.0.0.0:8080
+        #[arg(long, env = "CRYOEM_BRIDGE_HEALTH_ADDR")]
+        health_addr: Option<std::net::SocketAddr>,
     },
     /// Print the merged reference for an EMPIAR and/or EMDB id
     Lookup {
@@ -122,6 +126,29 @@ enum Cmd {
         /// Path to the event JSON, or - for stdin
         file: String,
     },
+}
+
+/// SIGINT from a terminal or SIGTERM from a supervisor such as Kubernetes.
+async fn shutdown_signal() {
+    #[cfg(unix)]
+    {
+        use tokio::signal::unix::{signal, SignalKind};
+        let mut term = match signal(SignalKind::terminate()) {
+            Ok(s) => s,
+            Err(_) => {
+                let _ = tokio::signal::ctrl_c().await;
+                return;
+            }
+        };
+        tokio::select! {
+            _ = tokio::signal::ctrl_c() => {}
+            _ = term.recv() => {}
+        }
+    }
+    #[cfg(not(unix))]
+    {
+        let _ = tokio::signal::ctrl_c().await;
+    }
 }
 
 #[tokio::main]
@@ -185,6 +212,7 @@ async fn main() -> Result<()> {
             out_topic,
             dlq,
             kafka,
+            health_addr,
         } => {
             let mut extra = Vec::new();
             for kv in kafka {
@@ -205,11 +233,16 @@ async fn main() -> Result<()> {
                 produce_timeout: Duration::from_secs(30),
             };
             let bridge = Bridge::new(cfg, Arc::new(lookup.resolver()))?;
-            let stats = bridge
-                .run(async {
-                    let _ = tokio::signal::ctrl_c().await;
-                })
-                .await?;
+            let health = match health_addr {
+                Some(addr) => {
+                    Some(scigantic_cryoem_context::health::serve(addr, bridge.stats()).await?)
+                }
+                None => None,
+            };
+            let stats = bridge.run(shutdown_signal()).await?;
+            if let Some(h) = health {
+                h.abort();
+            }
             eprintln!("{stats:?}");
         }
     }

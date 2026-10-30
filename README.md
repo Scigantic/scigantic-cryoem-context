@@ -37,6 +37,40 @@ Without a broker:
 
 `examples/docker-compose.yml` starts a local Redpanda for an end-to-end try.
 
+## Deploying on k3s
+
+`deploy/Dockerfile` builds the binary into a distroless image (no shell, runs
+as nonroot). CI pushes it to `ghcr.io/scigantic/scigantic-cryoem-context` on
+every push to main (`latest`, `sha-...`) and on tags (`0.1.0`), for amd64 and
+arm64.
+
+`deploy/k3s/` is a kustomization with a one-broker Kafka in KRaft mode on a
+PersistentVolumeClaim, a Job that creates the three topics, and the bridge
+Deployment with readiness and liveness probes on `/healthz`:
+
+    kubectl apply -k deploy/k3s
+    kubectl -n cryoem wait --for=condition=available deploy/cryoem-context-bridge --timeout=300s
+
+    # produce an event from inside the cluster and read the enriched one back
+    kubectl -n cryoem exec kafka-0 -- sh -c \
+      '/opt/kafka/bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic cryoem.ingest' \
+      < examples/event.eer.json
+    kubectl -n cryoem exec kafka-0 -- /opt/kafka/bin/kafka-console-consumer.sh \
+      --bootstrap-server localhost:9092 --topic cryoem.ingest.enriched --from-beginning --max-messages 1
+
+The bridge's settings are the ConfigMap in `deploy/k3s/bridge.yaml`; set
+`CRYOEM_BRIDGE_EMPIAR` or `CRYOEM_BRIDGE_EMDB` there to judge every event
+against one collection. The health endpoint (`--health-addr`, here
+`0.0.0.0:8080`) answers any GET with 200 and the counters as JSON. SIGTERM
+stops the loop after the in-flight message, so a rolling restart does not
+drop or duplicate events. To use a broker that already exists, drop
+`kafka.yaml` and `topics.yaml` from the kustomization and point
+`CRYOEM_BRIDGE_BROKERS` at it; TLS and SASL go through `--kafka` args.
+
+The single-broker Kafka is for a box that has none. It has one disk and no
+replication; a facility that already runs Strimzi or Redpanda should keep
+that and deploy only `bridge.yaml`.
+
 ## Events
 
 Input is the per-file record `scigantic-edge` writes, with an optional
@@ -143,7 +177,9 @@ per-message step without Kafka; `bus::Bridge` is the loop.
     src/resolve.rs   cached lookup
     src/message.rs   input and output JSON shapes, header names
     src/bus.rs       Kafka consume, enrich, produce
+    src/health.rs    probe endpoint
     src/bin/bridge.rs
+    deploy/          Dockerfile and the k3s kustomization
     tests/           fixtures are real API responses for EMD-11638, EMD-14173, EMPIAR-10973;
                      tests/bus_mock.rs runs the loop on librdkafka's in-process mock cluster
 

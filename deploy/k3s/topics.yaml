@@ -1,0 +1,25 @@
+# Creates the three topics once the broker answers. Idempotent: re-running
+# the job is a no-op for topics that already exist.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kafka-topics
+spec:
+  backoffLimit: 20
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: topics
+          image: apache/kafka:3.9.1
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              B=kafka-0.kafka:9092
+              for t in cryoem.ingest cryoem.ingest.enriched cryoem.ingest.dlq; do
+                /opt/kafka/bin/kafka-topics.sh --bootstrap-server $B --create --if-not-exists \
+                  --topic $t --partitions 3 --replication-factor 1
+              done
+              /opt/kafka/bin/kafka-topics.sh --bootstrap-server $B --list

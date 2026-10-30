@@ -1,0 +1,8 @@
+target
+.git
+.github
+deploy
+docs
+examples
+tests
+README.md

@@ -1,0 +1,81 @@
+# The bridge. Set the reference the facility's sessions should be judged
+# against in the ConfigMap, or leave both empty and put the reference on
+# each event (body or headers). For a secured broker, add the librdkafka
+# properties as CRYOEM_BRIDGE_KAFKA_* is not supported; use args instead:
+#   args: ["run", "--kafka", "security.protocol=SASL_SSL", ...]
+# and mount the password from a Secret into an env var the arg references.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cryoem-context-bridge
+data:
+  CRYOEM_BRIDGE_BROKERS: kafka-0.kafka:9092
+  CRYOEM_BRIDGE_GROUP: cryoem-context-bridge
+  CRYOEM_BRIDGE_IN: cryoem.ingest
+  CRYOEM_BRIDGE_OUT: cryoem.ingest.enriched
+  CRYOEM_BRIDGE_DLQ: cryoem.ingest.dlq
+  CRYOEM_BRIDGE_HEALTH_ADDR: 0.0.0.0:8080
+  CRYOEM_BRIDGE_CACHE_TTL: "3600"
+  # Default reference for events that name none, e.g. "10973" for the
+  # Glacios apoferritin collection. Blank means every event must carry its
+  # own reference (body or headers).
+  CRYOEM_BRIDGE_EMPIAR: ""
+  CRYOEM_BRIDGE_EMDB: ""
+  RUST_LOG: info,rdkafka=warn
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cryoem-context-bridge
+  labels:
+    app: cryoem-context-bridge
+spec:
+  # One replica per input partition at most; the consumer group shares them.
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cryoem-context-bridge
+  template:
+    metadata:
+      labels:
+        app: cryoem-context-bridge
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: bridge
+          image: ghcr.io/scigantic/scigantic-cryoem-context:latest
+          args: ["run"]
+          envFrom:
+            - configMapRef:
+                name: cryoem-context-bridge
+          ports:
+            - containerPort: 8080
+              name: health
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: health
+            initialDelaySeconds: 2
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: health
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+      terminationGracePeriodSeconds: 30

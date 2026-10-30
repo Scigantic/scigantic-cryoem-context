@@ -13,7 +13,7 @@ use rdkafka::message::{Header, Headers, Message, OwnedHeaders};
 use rdkafka::producer::{FutureProducer, FutureRecord, Producer};
 use rdkafka::util::Timeout;
 use std::future::Future;
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 use std::time::Duration;
 use tracing::{debug, info, warn};
 
@@ -150,6 +150,7 @@ pub struct Bridge {
     resolver: Arc<Resolver>,
     consumer: StreamConsumer,
     producer: FutureProducer,
+    stats: Arc<Mutex<Stats>>,
 }
 
 impl Bridge {
@@ -162,7 +163,13 @@ impl Bridge {
             resolver,
             consumer,
             producer,
+            stats: Arc::new(Mutex::new(Stats::default())),
         })
+    }
+
+    /// Live counters, shared with the health endpoint.
+    pub fn stats(&self) -> Arc<Mutex<Stats>> {
+        self.stats.clone()
     }
 
     /// Run until `shutdown` resolves. Returns counts.
@@ -242,6 +249,9 @@ impl Bridge {
                 }
             }
             self.consumer.store_offset_from_message(&msg)?;
+            if let Ok(mut shared) = self.stats.lock() {
+                *shared = stats;
+            }
         }
         if let Err(e) = self.consumer.commit_consumer_state(CommitMode::Sync) {
             // Nothing stored yet is a normal way to stop.

@@ -1,0 +1,103 @@
+# One Kafka broker in KRaft mode (no ZooKeeper), the smallest thing that
+# gives the bridge a bus on a facility's k3s box. Data lives on a
+# PersistentVolumeClaim; k3s provisions it with its local-path provisioner.
+# For more than one node, or retention guarantees beyond one disk, replace
+# this file with a Strimzi or Redpanda deployment and keep the Service name.
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+  labels:
+    app: kafka
+spec:
+  clusterIP: None
+  # The controller resolves its own name (kafka-0.kafka) before the broker
+  # listener is up; without this the DNS record waits for readiness and the
+  # pod never becomes ready.
+  publishNotReadyAddresses: true
+  selector:
+    app: kafka
+  ports:
+    - name: kafka
+      port: 9092
+    - name: controller
+      port: 9093
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kafka
+spec:
+  serviceName: kafka
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: kafka
+          image: apache/kafka:3.9.1
+          ports:
+            - containerPort: 9092
+              name: kafka
+            - containerPort: 9093
+              name: controller
+          env:
+            - name: KAFKA_NODE_ID
+              value: "1"
+            - name: KAFKA_PROCESS_ROLES
+              value: broker,controller
+            - name: KAFKA_CONTROLLER_QUORUM_VOTERS
+              value: 1@kafka-0.kafka:9093
+            - name: KAFKA_LISTENERS
+              value: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+            - name: KAFKA_ADVERTISED_LISTENERS
+              value: PLAINTEXT://kafka-0.kafka:9092
+            - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+              value: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+            - name: KAFKA_CONTROLLER_LISTENER_NAMES
+              value: CONTROLLER
+            - name: KAFKA_INTER_BROKER_LISTENER_NAME
+              value: PLAINTEXT
+            - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+              value: "1"
+            - name: KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR
+              value: "1"
+            - name: KAFKA_TRANSACTION_STATE_LOG_MIN_ISR
+              value: "1"
+            - name: KAFKA_AUTO_CREATE_TOPICS_ENABLE
+              value: "false"
+            - name: KAFKA_LOG_DIRS
+              value: /var/lib/kafka/data
+            - name: KAFKA_HEAP_OPTS
+              value: -Xmx512m -Xms256m
+            - name: CLUSTER_ID
+              value: cryoem-bridge-kraft-00001
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/kafka
+          readinessProbe:
+            tcpSocket:
+              port: 9092
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 250m
+              memory: 768Mi
+            limits:
+              memory: 1Gi
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 20Gi

@@ -17,23 +17,27 @@ pub struct ReferenceKey {
     pub emdb: Option<String>,
 }
 
+/// A blank id (an unset environment variable read as `""`) is no id.
+fn present(o: &Option<String>) -> Option<&str> {
+    o.as_deref().map(str::trim).filter(|s| !s.is_empty())
+}
+
 impl ReferenceKey {
     pub fn is_empty(&self) -> bool {
-        self.empiar.is_none() && self.emdb.is_none()
+        present(&self.empiar).is_none() && present(&self.emdb).is_none()
     }
 
     /// Canonicalise both ids, rejecting anything that is not an accession.
+    /// Blank ids are treated as absent.
     pub fn normalized(&self) -> Result<ReferenceKey> {
         if self.is_empty() {
             return Err(Error::NoReference);
         }
         Ok(ReferenceKey {
-            empiar: self
-                .empiar
-                .as_deref()
+            empiar: present(&self.empiar)
                 .map(|s| empiar::normalize_id(s).map(empiar::canonical_id))
                 .transpose()?,
-            emdb: self.emdb.as_deref().map(emdb::normalize_id).transpose()?,
+            emdb: present(&self.emdb).map(emdb::normalize_id).transpose()?,
         })
     }
 
@@ -46,15 +50,17 @@ impl ReferenceKey {
         )
     }
 
-    /// Fill in whatever `other` has that `self` lacks.
-    pub fn or(mut self, other: &ReferenceKey) -> ReferenceKey {
-        if self.empiar.is_none() {
-            self.empiar = other.empiar.clone();
+    /// Fill in whatever `other` has that `self` lacks. Blank ids on either
+    /// side count as lacking.
+    pub fn or(self, other: &ReferenceKey) -> ReferenceKey {
+        ReferenceKey {
+            empiar: present(&self.empiar)
+                .or(present(&other.empiar))
+                .map(str::to_string),
+            emdb: present(&self.emdb)
+                .or(present(&other.emdb))
+                .map(str::to_string),
         }
-        if self.emdb.is_none() {
-            self.emdb = other.emdb.clone();
-        }
-        self
     }
 }
 

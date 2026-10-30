@@ -17,13 +17,14 @@
 //!   record, using the field names `scigantic-edge` emits.
 //! - [`qc::check`] compares observed against expected and returns findings.
 //! - [`resolve::Resolver`] caches lookups; [`bus::Bridge`] runs the Kafka
-//!   consume, enrich, produce loop.
+//!   consume, enrich, produce loop; [`health::serve`] answers probes.
 
 pub mod bus;
 pub mod context;
 pub mod emdb;
 pub mod empiar;
 pub mod error;
+pub mod health;
 pub mod message;
 pub mod observed;
 pub mod qc;
