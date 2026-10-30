@@ -1,0 +1,13 @@
+{
+  "reference": {"emdb": "EMD-11638"},
+  "source": "/mnt/krios/session2/FoilHole_0001.mrc.mdoc",
+  "decoded": {
+    "format": "serialem-mdoc",
+    "fields": {
+      "pixelSpacing": 0.53,
+      "voltage": 200,
+      "imageSize": [4096, 4096],
+      "firstSection": {"exposureTime": 5.0, "exposureDose": 40.0}
+    }
+  }
+}

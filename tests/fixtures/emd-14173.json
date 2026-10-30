@@ -1,0 +1,346 @@
+{
+    "_id": "61f64b97fd72d256753b9419",
+    "admin": {
+        "authors_list": {
+            "author": [
+                {
+                    "instance_type": "author",
+                    "valueOf_": "Yang W"
+                },
+                {
+                    "instance_type": "author",
+                    "valueOf_": "Koh FA"
+                },
+                {
+                    "instance_type": "author",
+                    "valueOf_": "Zhang X"
+                },
+                {
+                    "instance_type": "author",
+                    "valueOf_": "Kotecha A"
+                }
+            ]
+        },
+        "current_status": {
+            "code": {
+                "valueOf_": "REL"
+            },
+            "date": "2023-03-22T00:00:00",
+            "processing_site": "PDBe"
+        },
+        "grant_support": {
+            "grant_reference": [
+                {
+                    "funding_body": "Not funded",
+                    "instance_type": "grant_reference"
+                }
+            ]
+        },
+        "key_dates": {
+            "deposition": "2022-01-20T00:00:00",
+            "header_release": "2022-02-02T00:00:00",
+            "map_release": "2022-02-02T00:00:00",
+            "update": "2023-03-22T00:00:00"
+        },
+        "sites": {
+            "deposition": "PDBe",
+            "last_processing": "PDBe"
+        },
+        "title": "1.6A Apoferritin from 200kV Glacios with Selectris X and Falcon 4"
+    },
+    "crossreferences": {
+        "citation_list": {
+            "primary_citation": {
+                "citation_type": {
+                    "author": [
+                        {
+                            "instance_type": "author",
+                            "order": 1,
+                            "valueOf_": "Koh A"
+                        },
+                        {
+                            "instance_type": "author",
+                            "order": 2,
+                            "valueOf_": "Khavnekar S"
+                        },
+                        {
+                            "instance_type": "author",
+                            "order": 3,
+                            "valueOf_": "Yang W"
+                        },
+                        {
+                            "instance_type": "author",
+                            "order": 4,
+                            "valueOf_": "Karia D"
+                        },
+                        {
+                            "instance_type": "author",
+                            "order": 5,
+                            "valueOf_": "Cats D"
+                        },
+                        {
+                            "instance_type": "author",
+                            "order": 6,
+                            "valueOf_": "van der Ploeg R"
+                        },
+                        {
+                            "instance_type": "author",
+                            "order": 7,
+                            "valueOf_": "Grollios F"
+                        },
+                        {
+                            "instance_type": "author",
+                            "order": 8,
+                            "valueOf_": "Raschdorf O"
+                        },
+                        {
+                            "instance_type": "author",
+                            "order": 9,
+                            "valueOf_": "Kotecha A"
+                        },
+                        {
+                            "instance_type": "author",
+                            "order": 10,
+                            "valueOf_": "Nemecek D"
+                        }
+                    ],
+                    "external_references": [
+                        {
+                            "instance_type": "external_references",
+                            "type_": "PUBMED",
+                            "valueOf_": "35377368"
+                        },
+                        {
+                            "instance_type": "external_references",
+                            "type_": "DOI",
+                            "valueOf_": "doi:10.3791/63519"
+                        },
+                        {
+                            "instance_type": "external_references",
+                            "type_": "ISSN",
+                            "valueOf_": "1940-087X"
+                        }
+                    ],
+                    "journal": "J Vis Exp",
+                    "journal_abbreviation": "J Vis Exp",
+                    "published": true,
+                    "title": "Routine Collection of High-Resolution cryo-EM Datasets Using 200 KV Transmission Electron Microscope.",
+                    "year": "2022"
+                }
+            }
+        },
+        "emdb_list": {
+            "emdb_reference": [
+                {
+                    "emdb_id": "EMD-14173",
+                    "instance_type": "emdb_reference",
+                    "relationship": {
+                        "other": "associated EM volume"
+                    }
+                }
+            ]
+        }
+    },
+    "emdb_id": "EMD-14173",
+    "map": {
+        "annotation_details": "1.6A ApoF from 200kV Glacios with Selectris Falcon 4",
+        "axis_order": {
+            "fast": "X",
+            "medium": "Y",
+            "slow": "Z"
+        },
+        "cell": {
+            "a": {
+                "units": "\u212b",
+                "valueOf_": "232.32"
+            },
+            "alpha": {
+                "units": "deg",
+                "valueOf_": "90.0"
+            },
+            "b": {
+                "units": "\u212b",
+                "valueOf_": "232.32"
+            },
+            "beta": {
+                "units": "deg",
+                "valueOf_": "90.0"
+            },
+            "c": {
+                "units": "\u212b",
+                "valueOf_": "232.32"
+            },
+            "gamma": {
+                "units": "deg",
+                "valueOf_": "90.0"
+            }
+        },
+        "contour_list": {
+            "contour": [
+                {
+                    "instance_type": "contour",
+                    "level": 0.03,
+                    "primary": true,
+                    "source": "AUTHOR"
+                }
+            ]
+        },
+        "data_type": "IMAGE STORED AS FLOATING POINT NUMBER (4 BYTES)",
+        "dimensions": {
+            "col": 384,
+            "row": 384,
+            "sec": 384
+        },
+        "file": "emd_14173.map.gz",
+        "format": "CCP4",
+        "label": "::::EMDATABANK.org::::EMD-14173::::",
+        "origin": {
+            "col": 0,
+            "row": 0,
+            "sec": 0
+        },
+        "pixel_spacing": {
+            "x": {
+                "units": "\u212b",
+                "valueOf_": "0.605"
+            },
+            "y": {
+                "units": "\u212b",
+                "valueOf_": "0.605"
+            },
+            "z": {
+                "units": "\u212b",
+                "valueOf_": "0.605"
+            }
+        },
+        "size_kbytes": 226493,
+        "spacing": {
+            "x": 384,
+            "y": 384,
+            "z": 384
+        },
+        "statistics": {
+            "average": 4.496478e-05,
+            "maximum": 0.18823574,
+            "minimum": -0.07955327,
+            "std": 0.0054030535
+        },
+        "symmetry": {
+            "space_group": 1
+        }
+    },
+    "sample": {
+        "name": {
+            "valueOf_": "Apoferritin"
+        },
+        "supramolecule_list": {
+            "supramolecule": [
+                {
+                    "chimera": true,
+                    "instance_type": "complex_supramolecule",
+                    "name": {
+                        "valueOf_": "Apoferritin"
+                    },
+                    "natural_source": [
+                        {
+                            "database": "NCBI",
+                            "instance_type": "natural_source",
+                            "organism": {
+                                "ncbi": 10090,
+                                "valueOf_": "Mus musculus"
+                            }
+                        }
+                    ],
+                    "parent": 0,
+                    "supramolecule_id": 1
+                }
+            ]
+        }
+    },
+    "structure_determination_list": {
+        "structure_determination": [
+            {
+                "aggregation_state": "particle",
+                "image_processing": [
+                    {
+                        "final_angle_assignment": {
+                            "type_": "MAXIMUM LIKELIHOOD"
+                        },
+                        "final_reconstruction": {
+                            "number_images_used": 212045,
+                            "resolution": {
+                                "res_type": "BY AUTHOR",
+                                "units": "\u212b",
+                                "valueOf_": "1.635"
+                            },
+                            "resolution_method": "FSC 0.143 CUT-OFF"
+                        },
+                        "image_processing_id": 1,
+                        "image_recording_id": 1,
+                        "initial_angle_assignment": {
+                            "type_": "MAXIMUM LIKELIHOOD"
+                        },
+                        "instance_type": "singleparticle_processing"
+                    }
+                ],
+                "instance_type": "structure_determination",
+                "method": "singleParticle",
+                "microscopy_list": {
+                    "microscopy": [
+                        {
+                            "acceleration_voltage": {
+                                "units": "kV",
+                                "valueOf_": "200"
+                            },
+                            "electron_source": "FIELD EMISSION GUN",
+                            "illumination_mode": "FLOOD BEAM",
+                            "image_recording_list": {
+                                "image_recording": [
+                                    {
+                                        "average_electron_dose_per_image": {
+                                            "units": "e/\u212b^2",
+                                            "valueOf_": "40.0"
+                                        },
+                                        "film_or_detector_model": {
+                                            "valueOf_": "FEI FALCON IV (4k x 4k)"
+                                        },
+                                        "image_recording_id": 1,
+                                        "instance_type": "image_recording"
+                                    }
+                                ]
+                            },
+                            "imaging_mode": "BRIGHT FIELD",
+                            "instance_type": "single_particle_microscopy",
+                            "microscope": "TFS GLACIOS",
+                            "microscopy_id": 1,
+                            "nominal_defocus_max": {
+                                "units": "\u00b5m",
+                                "valueOf_": "0.9"
+                            },
+                            "nominal_defocus_min": {
+                                "units": "\u00b5m",
+                                "valueOf_": "0.5"
+                            }
+                        }
+                    ]
+                },
+                "specimen_preparation_list": {
+                    "specimen_preparation": [
+                        {
+                            "buffer": {
+                                "ph": 7.5
+                            },
+                            "instance_type": "single_particle_preparation",
+                            "preparation_id": 1,
+                            "vitrification": {
+                                "cryogen_name": "ETHANE"
+                            }
+                        }
+                    ]
+                },
+                "structure_determination_id": 1
+            }
+        ]
+    },
+    "version": "3.0.2.10"
+}

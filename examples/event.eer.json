@@ -1,0 +1,18 @@
+{
+  "reference": {"empiar": "10973"},
+  "source": "/mnt/glacios/session1/Images-Disc1/GridSquare_1/Data/FoilHole_0001.eer",
+  "sizeBytes": 147199534,
+  "mtime": 1761700000,
+  "decoded": {
+    "format": "eer",
+    "summary": "EER 4096x4096, 371 frames",
+    "fields": {
+      "pixelSizeA": 0.43,
+      "commercialName": "Falcon 4i",
+      "imageWidth": 4096,
+      "imageLength": 4096,
+      "numberOfFrames": 371,
+      "exposureTime": 5.1
+    }
+  }
+}
