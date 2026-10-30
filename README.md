@@ -73,7 +73,7 @@ that and deploy only `bridge.yaml`.
 
 ## Events
 
-Input is the per-file record `scigantic-edge` writes, with an optional
+Input is the per-file record [scigantic-edge](https://github.com/Scigantic/scigantic-edge) writes, with an optional
 `reference` naming the archive entries to compare against:
 
     {
@@ -88,7 +88,7 @@ The reference can instead come from the Kafka headers `scigantic-empiar` and
 `scigantic-emdb`, or from `--empiar` / `--emdb` on the command line, which
 apply to every event that names none. Body beats headers beats defaults. An
 EMPIAR id alone is enough: the entry's EMDB cross-reference is followed.
-Producers that are not scigantic-edge can send
+Producers that are not [scigantic-edge](https://github.com/Scigantic/scigantic-edge) can send
 `{"setup": {"pixelSizeA": 0.43, "voltageKv": 200, ...}}` using the canonical
 keys below.
 
@@ -132,7 +132,7 @@ replays, it does not lose.
 
 ## Checks
 
-Observed values come from the header fields `scigantic-edge` emits for `mrc`,
+Observed values come from the header fields [scigantic-edge](https://github.com/Scigantic/scigantic-edge) emits for `mrc`,
 `eer`, `epu-image` and `serialem-mdoc`, mapped onto the canonical keys of its
 setup check. Expected values come from EMPIAR for image-set facts and EMDB for
 microscope facts.
@@ -166,6 +166,13 @@ Tolerances are flags: `--tol-pixel`, `--tol-voltage`, `--tol-dose`.
 `emdb::EmdbClient` and `empiar::EmpiarClient` are usable on their own and
 accept a base URL for a mirror or a test server. `bus::process` is the
 per-message step without Kafka; `bus::Bridge` is the loop.
+
+## Related repositories
+
+- [scigantic-edge](https://github.com/Scigantic/scigantic-edge): decodes instrument files on the box and writes the per-file records this bridge consumes.
+- [scigantic-emdb](https://github.com/Scigantic/scigantic-emdb): the EMDB archive from Python, for searching entries by protein, organism or resolution before pinning one as a reference.
+- [scigantic-empiar](https://github.com/Scigantic/scigantic-empiar): the EMPIAR archive from Python, including reading the raw movies a reference entry holds.
+- [scigantic-headers](https://github.com/Scigantic/scigantic-headers): the Python header decoders scigantic-edge's field names follow.
 
 ## Layout
 
